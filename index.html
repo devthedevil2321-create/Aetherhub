@@ -1,0 +1,149 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+
+export default function AetherHub() {
+  // Application States
+  const [pin, setPin] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [pinError, setPinError] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Configuration Constants
+  const SECRET_PIN = '2321'; // Change this to your secret 4-digit code
+  const WHATSAPP_NUMBER = '+917653901985'; // Change to your number with country code (e.g., +91 for India)
+  const PORTAL_URL = 'https://studypanda.live';
+
+  // Load progress from local browser storage on boot
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('aether_progress');
+    if (savedProgress) {
+      setProgress(parseInt(savedProgress, 10));
+    }
+  }, []);
+
+  // Update progress handler
+  const handleProgressChange = (amount: number) => {
+    const newProgress = Math.min(Math.max(progress + amount, 0), 100);
+    setProgress(newProgress);
+    localStorage.setItem('aether_progress', newProgress.toString());
+  };
+
+  // Auth Handler
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pin === SECRET_PIN) {
+      setIsAuthenticated(true);
+      setPinError(false);
+    } else {
+      setPinError(true);
+      setPin('');
+    }
+  };
+
+  // 1. Lock Screen View
+  if (!isAuthenticated) {
+    return (
+      <div className="w-screen h-screen flex flex-col items-center justify-center bg-gray-950 text-gray-100 font-sans p-4">
+        <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl text-center">
+          <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-3xl rounded-2xl flex items-center justify-center mx-auto mb-6">
+            🪐
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-white mb-2">AetherHub v1.0</h1>
+          <p className="text-sm text-gray-400 mb-6">Enter access code to initialize environment.</p>
+          
+          <form onSubmit={handleVerify} className="space-y-4">
+            <input
+              type="password"
+              maxLength={4}
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              placeholder="••••"
+              className={`w-full text-center text-xl tracking-widest bg-gray-950 border ${
+                pinError ? 'border-red-500 animate-pulse' : 'border-gray-800 focus:border-indigo-500'
+              } rounded-xl py-3 px-4 text-white focus:outline-none transition duration-150`}
+            />
+            {pinError && <p className="text-xs text-red-400">Invalid security PIN. Try again.</p>}
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl py-3 transition shadow-lg shadow-indigo-600/20"
+            >
+              Verify Node
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Main Terminal Portal View
+  return (
+    <div className="w-screen h-screen flex flex-col bg-gray-950 overflow-hidden select-none font-sans">
+      
+      {/* Top Navigation */}
+      <header className="w-full bg-gray-900 border-b border-gray-800 px-4 py-3 flex flex-wrap md:flex-nowrap justify-between items-center gap-4 shadow-lg z-50">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-sm">
+            🪐
+          </div>
+          <div>
+            <h1 className="text-sm md:text-base font-bold tracking-wide text-white">AETHERHUB</h1>
+            <p className="text-[10px] text-gray-400 tracking-wider uppercase">Secure Core Module</p>
+          </div>
+        </div>
+
+        {/* Browser-based Progress Tracking Dashboard */}
+        <div className="flex items-center gap-4 bg-gray-950 border border-gray-800 rounded-xl px-4 py-2">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Batch Progress</span>
+            <div className="w-32 bg-gray-800 h-2 rounded-full overflow-hidden mt-1">
+              <div className="bg-indigo-500 h-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold text-indigo-400">{progress}%</span>
+            <div className="flex flex-col gap-0.5 ml-1">
+              <button onClick={() => handleProgressChange(5)} className="text-[10px] bg-gray-800 hover:bg-gray-700 px-1 rounded text-white">+</button>
+              <button onClick={() => handleProgressChange(-5)} className="text-[10px] bg-gray-800 hover:bg-gray-700 px-1 rounded text-white">-</button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Creator Identity Watermark */}
+        <div className="text-right">
+          <p className="text-xs text-gray-400 font-medium">
+            Made with ❤️ by <span className="text-indigo-400 font-bold">Dev Aradhya Swain</span>
+          </p>
+        </div>
+      </header>
+
+      {/* Embedded Study Viewport */}
+      <div className="flex-1 w-full h-full bg-black relative">
+        <iframe
+          src={PORTAL_URL}
+          title="Core Workspace"
+          className="w-full h-full border-none"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+
+        {/* Floating Quick-Chat Connection Node */}
+        <a
+          href={`https://wa.me{WHATSAPP_NUMBER}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-6 right-6 z-50 bg-emerald-600 hover:bg-emerald-500 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition duration-200 group hover:scale-105"
+          title="Ping Developer"
+        >
+          <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.858.002-2.634-1.023-5.11-2.885-6.974C16.526 1.849 14.05 0.824 11.417 0.824c-5.438 0-9.861 4.421-9.865 9.859-.001 1.702.455 3.363 1.321 4.828l-.993 3.626 3.714-.974zm12.057-7.143c-.302-.151-1.791-.882-2.073-.984-.282-.103-.487-.151-.692.151-.204.301-.791.984-.969 1.186-.178.201-.357.226-.659.075-.302-.151-1.272-.469-2.423-1.496-.895-.798-1.5-1.784-1.676-2.086-.176-.302-.019-.465.132-.614.136-.134.302-.351.453-.527.151-.176.201-.301.302-.503.102-.201.051-.376-.025-.527-.076-.151-.692-1.668-.949-2.285-.249-.599-.503-.517-.692-.527h-.591c-.205 0-.538.076-.82 302-.282.302-1.077 1.054-1.077 2.57 0 1.516 1.102 2.985 1.256 3.186.154.201 2.169 3.312 5.253 4.643.733.317 1.307.507 1.753.649.737.234 1.407.201 1.937.122.59-.088 1.791-.733 2.048-1.442.256-.708.256-1.315.18-1.442-.077-.127-.282-.201-.584-.352z" />
+          </svg>
+          <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 text-xs font-semibold whitespace-nowrap transition-all duration-300 ease-in-out">
+            Ping Dev Node
+          </span>
+        </a>
+      </div>
+
+    </div>
+  );
+}
